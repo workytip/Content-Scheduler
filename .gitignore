@@ -1,0 +1,42 @@
+# ========== Laravel ==========
+/Laravel-API/.phpunit.cache
+/Laravel-API/.phpunit.result.cache
+/Laravel-API/node_modules/
+/Laravel-API/public/build/
+/Laravel-API/public/hot
+/Laravel-API/public/storage
+/Laravel-API/storage/*.key
+/Laravel-API/vendor/
+/Laravel-API/.env
+/Laravel-API/.env.backup
+/Laravel-API/.env.production
+/Laravel-API/Homestead.json
+/Laravel-API/Homestead.yaml
+/Laravel-API/auth.json
+/Laravel-API/npm-debug.log
+/Laravel-API/yarn-error.log
+/Laravel-API/.fleet/
+/Laravel-API/.idea/
+/Laravel-API/.vscode/
+/Laravel-API.devdbrc
+
+# ========== React ==========
+/React-UI/logs/
+/React-UI/*.log
+/React-UI/npm-debug.log*
+/React-UI/yarn-debug.log*
+/React-UI/yarn-error.log*
+/React-UI/pnpm-debug.log*
+/React-UI/lerna-debug.log*
+/React-UI/node_modules/
+/React-UI/dist/
+/React-UI/dist-ssr/
+/React-UI/*.local
+
+# Editor/OS files (applies to both projects)
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
