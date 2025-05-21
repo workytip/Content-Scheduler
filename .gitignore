@@ -18,7 +18,7 @@
 /Laravel-API/.fleet/
 /Laravel-API/.idea/
 /Laravel-API/.vscode/
-/Laravel-API.devdbrc
+/Laravel-API/.devdbrc
 
 # ========== React ==========
 /React-UI/logs/

@@ -1,13 +1,13 @@
 
 [
     {
-        "name": "blueprint-v10",
+        "name": "schedulerdb",
         "type": "mysql",
         "host": "127.0.0.1",
         "port": "3306",
         "username": "root",
         "password": "",
-        "database": "blueprint-v10" 
+        "database": "schedulerdb" 
     },
     {
         "type": "mysql",
