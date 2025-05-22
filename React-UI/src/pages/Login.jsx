@@ -1,20 +1,39 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from '../api/axios';
+import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+    const { login } = useContext(AuthContext);
 
-    const handleSubmit = (e) => {
+    const navigate = useNavigate();
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Placeholder for authentication logic
-        if (!email || !password) {
-            setError('Please enter both email and password.');
-        } else {
-            setError('');
-            // Add login logic here
-            alert('Logged in!');
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await axios.post('/login', {
+                email,
+                password,
+            });
+
+            login(response.data.token, response.data.user);
+            navigate('/');
+        } catch (err) {
+            if (err.response) {
+                setError(err.response.data.message || 'Login failed');
+            } else if (err.request) {
+                setError('No response from server');
+            } else {
+                setError('An error occurred: ' + err.message);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -32,6 +51,7 @@ const Login = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <div>
@@ -42,13 +62,15 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                        disabled={loading}
                     >
-                        Login
+                        {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
                 <p className="mt-4 text-center">

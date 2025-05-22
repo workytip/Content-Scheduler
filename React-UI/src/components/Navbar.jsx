@@ -1,10 +1,18 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom'; // Make sure you have react-router-dom installed
+import { useState, useEffect, useContext } from 'react'; // <-- add useContext
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext'; // <-- import AuthContext
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Change this based on your auth state
+  const navigate = useNavigate();
+  const { isLoggedIn, logout , user } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
@@ -18,14 +26,13 @@ const Navbar = () => {
             <div>
               <Link to="/" className="flex items-center py-4 px-2">
                 <img 
-                  src = "./src/assets/logo.png"
+                  src = "/assets/logo.png"
                   alt="Logo" 
                   className="h-8 w-8 mr-2"
                 />
-                <span className="font-semibold text-gray-500 text-lg">Your Brand</span>
+                <span className="font-semibold text-gray-500 text-lg">Content Scheduler</span>
               </Link>
             </div>
-            
             {/* Primary Nav */}
             <div className="hidden md:flex items-center space-x-1">
               <Link 
@@ -58,11 +65,11 @@ const Navbar = () => {
                   className="flex items-center text-gray-500 hover:text-blue-500"
                 >
                   <img 
-                    src="https://via.placeholder.com/30" 
+                    src="/assets/profile.png" 
                     alt="Profile" 
                     className="h-8 w-8 rounded-full mr-2"
                   />
-                  <span>John Doe</span>
+                  <span>{user ? user.name : ''}</span>
                 </button>
                 
                 {/* Profile Dropdown */}
@@ -81,10 +88,10 @@ const Navbar = () => {
                       Settings
                     </Link>
                     <button 
-                      onClick={() => setIsLoggedIn(false)}
+                      onClick={handleLogout}
                       className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
-                      Register
+                      Logout
                     </button>
                   </div>
                 )}
@@ -160,10 +167,10 @@ const Navbar = () => {
                 Profile
               </Link>
               <button 
-                onClick={() => setIsLoggedIn(false)}
+                onClick={handleLogout}
                 className="block w-full text-left px-3 py-2 text-base font-medium text-gray-500 hover:text-blue-500 hover:bg-gray-50"
               >
-                Sign out
+                Logout
               </button>
             </>
           ) : (
