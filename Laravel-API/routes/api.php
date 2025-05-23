@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,14 +16,21 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+
+// Auth routes
+Route::post('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+
+// User routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::put('/users/{user}/password', [AuthController::class, 'updatePassword']);
+    Route::apiResource('users', UserController::class)->only(['show', 'update', 'destroy']);
 });
+   
 
-//login
-Route::post('/login', [AuthController::class, 'login'])
-    ->name('login');
-
-//logout
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->name('logout');    

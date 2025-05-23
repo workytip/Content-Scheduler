@@ -10,10 +10,22 @@ export const AuthProvider = ({ children }) => {
   );
 
   useEffect(() => {
+    // Try to get user from localStorage first
+    const storedUser = localStorage.getItem('user');
     if (localStorage.getItem('token') && !user) {
-      axios.get('/user')
-        .then(res => setUser(res.data))
-        .catch(() => setUser(null));
+      let userId = null;
+      if (storedUser) {
+        try {
+          userId = JSON.parse(storedUser).id;
+        } catch {
+          userId = null;
+        }
+      }
+      if (userId) {
+        axios.get(`/users/${userId}`)
+          .then(res => setUser(res.data.user)) // adjust if your API wraps data
+          .catch(() => setUser(null));
+      }
     }
   }, [isLoggedIn]);
 

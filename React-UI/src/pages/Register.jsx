@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from '../api/axios';
 
 const Register = () => {
     const [email, setEmail] = useState('');
@@ -7,19 +8,42 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [name, setName] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!email || !password || !confirmPassword) {
+        setError('');
+        setSuccess('');
+        if (!name || !email || !password || !confirmPassword) {
             setError('Please fill in all fields.');
-            setSuccess('');
-        } else if (password !== confirmPassword) {
+            return;
+        }
+        if (password !== confirmPassword) {
             setError('Passwords do not match.');
-            setSuccess('');
-        } else {
-            setError('');
+            return;
+        }
+        setLoading(true);
+        try {
+            const response = await axios.post('/register', {
+                name,
+                email,
+                password,
+                password_confirmation: confirmPassword,
+            });
             setSuccess('Registration successful!');
-            // Add registration logic here
+            setTimeout(() => navigate('/login'), 1500);
+        } catch (err) {
+            if (err.response && err.response.data && err.response.data.errors) {
+                // Show first validation error
+                const firstError = Object.values(err.response.data.errors)[0][0];
+                setError(firstError);
+            } else {
+                setError('Registration failed.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -31,6 +55,17 @@ const Register = () => {
                 {success && <div className="mb-4 text-green-600">{success}</div>}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
+                        <label className="block mb-1 font-medium">Name</label>
+                        <input
+                            type="text"
+                            className="w-full border px-3 py-2 rounded"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+                    <div>
                         <label className="block mb-1 font-medium">Email</label>
                         <input
                             type="email"
@@ -38,6 +73,7 @@ const Register = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <div>
@@ -48,6 +84,7 @@ const Register = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <div>
@@ -58,13 +95,15 @@ const Register = () => {
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             required
+                            disabled={loading}
                         />
                     </div>
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                        disabled={loading}
                     >
-                        Register
+                        {loading ? 'Registering...' : 'Register'}
                     </button>
                 </form>
                 <p className="mt-4 text-center">
