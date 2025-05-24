@@ -24,7 +24,9 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [showForm, setShowForm] = useState(false); // <-- Add this
+  const [showForm, setShowForm] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
 
   // Fetch platforms for select
   useEffect(() => {
@@ -95,7 +97,7 @@ const Home = () => {
       }
       setForm(initialForm);
       setEditingId(null);
-      setShowForm(false); // <-- Hide form after submit
+      setShowForm(false);
       fetchPosts();
     } catch (err) {
       setError(
@@ -116,29 +118,41 @@ const Home = () => {
       platforms: post.platforms ? post.platforms.map(p => p.id) : [],
     });
     setEditingId(post.id);
-    setShowForm(true); // <-- Show form when editing
+    setShowForm(true);
     setSuccessMsg('');
     setError('');
   };
 
   // Delete post
-  const handleDelete = async id => {
-    if (!window.confirm('Delete this post?')) return;
+  const handleDeleteClick = id => {
+    setPostToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setShowDeleteModal(false);
+    if (!postToDelete) return;
     setError('');
     setSuccessMsg('');
     try {
-      const res = await axios.delete(`/posts/${id}`);
+      const res = await axios.delete(`/posts/${postToDelete}`);
       setSuccessMsg(res.data.message || 'Post deleted!');
       fetchPosts();
     } catch {
       setError('Failed to delete post');
     }
+    setPostToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setPostToDelete(null);
   };
 
   const handleCancel = () => {
     setForm(initialForm);
     setEditingId(null);
-    setShowForm(false); 
+    setShowForm(false);
   };
 
   return (
@@ -180,8 +194,31 @@ const Home = () => {
         posts={posts}
         loading={loading}
         handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        handleDelete={handleDeleteClick}
       />
+
+      {/* Delete confirmation modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded shadow-lg p-6 w-full max-w-xs text-center">
+            <p className="mb-4">Are you sure you want to delete this post?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded"
+                onClick={handleConfirmDelete}
+              >
+                Delete
+              </button>
+              <button
+                className="bg-gray-300 px-4 py-2 rounded"
+                onClick={handleCancelDelete}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

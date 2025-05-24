@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
@@ -81,15 +80,7 @@ class PostController extends Controller
         ], 200);
     }
 
-    //list platforms
-    public function getPlatforms()
-    {
-        $platforms = \App\Models\Platform::all();
 
-        return response()->json(['platforms' => $platforms], 200);
-    }
-
-    // Get post by ID
     public function show(Post $post)
     {
         return response()->json([

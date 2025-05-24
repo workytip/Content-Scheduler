@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PlatformController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 
@@ -34,7 +35,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class)->only(['show', 'update', 'destroy']);
     Route::apiResource('posts', PostController::class);
     //platforms
-    Route::get('/platforms', [PostController::class, 'getPlatforms'])->name('platforms.index');
+    Route::get('/platforms', [PlatformController::class, 'getPlatformsWithStatus'])->name('platforms.index');
+    Route::get('/user/platforms', [PlatformController::class, 'getUserPlatforms']);
+    Route::post('/platforms/{platform}/toggle', [PlatformController::class, 'togglePlatform'])->name('platforms.toggle');
 });
    
 

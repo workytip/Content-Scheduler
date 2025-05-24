@@ -1,9 +1,14 @@
 import React from 'react';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import Spinner from './Spinner';
+
 
 const PostList = ({ posts, loading, handleEdit, handleDelete }) => (
   loading ? (
-    <div>Loading...</div>
+    <div className="flex items-center gap-2 py-4 justify-center">
+      <Spinner />
+      <span>Loading...</span>
+    </div>
   ) : (
     <table className="w-full border">
       <thead>
