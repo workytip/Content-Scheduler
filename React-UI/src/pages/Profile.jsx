@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
 
 const Profile = () => {
   const { user: authUser } = useContext(AuthContext);
@@ -99,7 +100,12 @@ const Profile = () => {
   }
 
   if (!user) {
-    return <div className="text-center mt-8">Loading...</div>;
+    return (
+    <div className="flex items-center gap-2 py-4 justify-center">
+      <Spinner />
+      <span>Loading...</span>
+    </div>
+    );
   }
 
   return (

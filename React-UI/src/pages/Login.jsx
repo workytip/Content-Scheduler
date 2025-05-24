@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
+import Spinner from '../components/Spinner';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -70,7 +71,14 @@ const Login = () => {
                         className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
                         disabled={loading}
                     >
-                        {loading ? 'Logging in...' : 'Login'}
+                        {loading ? (
+                            <>
+                                <Spinner />
+                                Logging in...
+                            </>
+                        ) : (
+                            'Login'
+                        )}
                     </button>
                 </form>
                 <p className="mt-4 text-center">
