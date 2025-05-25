@@ -85,13 +85,19 @@ const Home = () => {
       }
     }
 
+    // Convert local datetime to UTC ISO string
+    const local = form.scheduledTime; 
+    const utc = new Date(local).toISOString(); 
+
+    const formData = { ...form, scheduledTime: utc };
+
     try {
       let res;
       if (editingId) {
-        res = await axios.put(`/posts/${editingId}`, form);
+        res = await axios.put(`/posts/${editingId}`, formData);
         setSuccessMsg(res.data.message || 'Post updated!');
       } else {
-        res = await axios.post('/posts', form);
+        res = await axios.post('/posts', formData);
         setSuccessMsg(res.data.message || 'Post created!');
         setFilters({ status: '', date: '' });
       }
@@ -113,7 +119,7 @@ const Home = () => {
       title: post.title,
       content: post.content,
       imageUrl: post.imageUrl,
-      scheduledTime: post.scheduledTime,
+      scheduledTime: utcToLocalInput(post.scheduledTime), // <-- convert here
       status: post.status,
       platforms: post.platforms ? post.platforms.map(p => p.id) : [],
     });
@@ -154,6 +160,14 @@ const Home = () => {
     setEditingId(null);
     setShowForm(false);
   };
+
+  function utcToLocalInput(utcString) {
+    if (!utcString) return '';
+    const date = new Date(utcString + (utcString.endsWith('Z') ? '' : 'Z'));
+    // Pad to "YYYY-MM-DDTHH:mm"
+    const pad = n => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
 
   return (
     <div className="max-w-3xl mx-auto p-4">

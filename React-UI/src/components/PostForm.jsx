@@ -27,6 +27,9 @@ const PostForm = ({
       className="w-full border px-2 py-1 rounded"
       required
     />
+    <div className="text-right text-sm mt-1">
+      {form.content.length} characters
+    </div>
     <input
       type="url"
       name="imageUrl"

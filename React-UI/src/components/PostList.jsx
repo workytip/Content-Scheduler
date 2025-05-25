@@ -25,7 +25,11 @@ const PostList = ({ posts, loading, handleEdit, handleDelete }) => (
           <tr key={post.id}>
             <td className="border px-2 py-1">{post.title}</td>
             <td className="border px-2 py-1">{post.status}</td>
-            <td className="border px-2 py-1">{post.scheduledTime}</td>
+            <td className="border px-2 py-1">
+              {post.scheduledTime
+                ? new Date(post.scheduledTime + 'Z').toLocaleString()
+                : ''}
+            </td>
             <td className="border px-2 py-1">
               {(post.platforms || []).map(p => p.name).join(', ')}
             </td>
