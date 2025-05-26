@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       }
       if (userId) {
         axios.get(`/users/${userId}`)
-          .then(res => setUser(res.data.user)) // adjust if your API wraps data
+          .then(res => setUser(res.data.user)) 
           .catch(() => setUser(null));
       }
     }
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, user }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
