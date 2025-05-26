@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Platform;
 use Illuminate\Http\Request;
+use App\Services\PlatformService;
 
 class PlatformController extends Controller
 {
@@ -13,10 +14,10 @@ class PlatformController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function getPlatformsWithStatus(Request $request)
+    public function getPlatformsWithStatus(Request $request, PlatformService $platformService)
     {
         $user = $request->user();
-        $platforms = $user->platforms()->wherePivot('is_active', true)->get();
+        $platforms = $platformService->getActivePlatforms($user);
 
         return response()->json(['platforms' => $platforms], 200);
     }
@@ -28,29 +29,16 @@ class PlatformController extends Controller
      * @param \App\Models\Platform $platform
      * @return \Illuminate\Http\JsonResponse
      */
-    public function togglePlatform(Request $request, Platform $platform)
+    public function togglePlatform(Request $request, Platform $platform, PlatformService $platformService)
     {
         $user = $request->user();
-        $platformId = $platform->id;
+        $result = $platformService->togglePlatform($user, $platform);
 
-        $platform = Platform::find($platformId);
-
-        if (!$platform) {
-            return response()->json(['message' => 'Platform not found'], 404);
+        if (isset($result['error'])) {
+            return response()->json(['message' => $result['error']], $result['status']);
         }
 
-        $pivot = $user->platforms()->where('platform_id', $platformId)->first();
-
-        if ($pivot) {
-            $current = (bool) $pivot->pivot->is_active;
-            $user->platforms()->updateExistingPivot($platformId, ['is_active' => !$current]);
-            return response()->json([
-                'message' => $current ? 'Platform deactivated successfully' : 'Platform activated successfully'
-            ], 200);
-        } else {
-            $user->platforms()->attach($platformId, ['is_active' => true]);
-            return response()->json(['message' => 'Platform activated successfully'], 200);
-        }
+        return response()->json(['message' => $result['message']], $result['status']);
     }
 
     /**
@@ -60,17 +48,10 @@ class PlatformController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     
-    public function getUserPlatforms(Request $request)
+    public function getUserPlatforms(Request $request, PlatformService $platformService)
     {
         $user = $request->user();
-        $platforms = Platform::all()->map(function ($platform) use ($user) {
-            $pivot = $user->platforms()->where('platform_id', $platform->id)->first();
-            return [
-                'id' => $platform->id,
-                'name' => $platform->name,
-                'is_active' => $pivot ? (bool) $pivot->pivot->is_active : false,
-            ];
-        });
+        $platforms = $platformService->getUserPlatforms($user);
 
         return response()->json(['platforms' => $platforms], 200);
     }

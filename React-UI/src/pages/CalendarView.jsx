@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import { parseISO } from 'date-fns';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import axios from '../api/axios';
 import moment from 'moment';
+import axios from '../api/axios';
+import { parseISO } from 'date-fns';
+import React, { useEffect, useState } from 'react';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 
 const localizer = momentLocalizer(moment);
 

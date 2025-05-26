@@ -8,65 +8,60 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
     //
-    //stateless jwt login auth
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, AuthService $authService)
     {
-        $credentials = $request->only('email', 'password');
+        $result = $authService->login($request);
 
-        if (auth()->attempt($credentials)) {
-            $user = auth()->user();
-            $token = $user->createToken('auth_token')->plainTextToken;
-
+        if (isset($result['user'])) {
             return response()->json([
-                'token' => $token,
-                'user' => new UserResource($user),
-            ], 200);
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+                'message' => $result['message'],
+                'token' => $result['token'],
+                'user' => new UserResource($result['user']),
+                'expires_in' => $result['expires_in']
+            ], $result['status']);
         }
+
+        // For errors
+        return response()->json([
+            'message' => $result['message']
+        ], $result['status']);
     }
 
 
     /**
      * Logout the authenticated user (revoke the token).
      */
-    public function logout(Request $request)
+    public function logout(Request $request, AuthService $authService)
     {
         $user = auth()->user();
-        $user->tokens()->delete();
+        $result = $authService->logout($user);
 
-        return response()->json(['message' => 'Successfully logged out'], 200);
+        return response()->json(['message' => $result['message']], $result['status']);
     }
 
     /**
      * Register a new user.
      */
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request, AuthService $authService)
     {
         $validated = $request->validated();
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $result = $authService->register($validated);
 
         return response()->json([
-            'token' => $token,
-            'user' => new UserResource($user),
-        ], 201);
+            'token' => $result['token'],
+            'user' => new UserResource($result['user']),
+        ], $result['status']);
     }
 
     /**
      * Update the password of the authenticated user.
      */
-    public function updatePassword(Request $request)
+    public function updatePassword(Request $request, AuthService $authService)
     {
         $request->validate([
             'current_password' => 'required|string',
@@ -74,23 +69,12 @@ class AuthController extends Controller
         ]);
 
         $user = auth()->user();
+        $result = $authService->updatePassword($user, $request->only('current_password', 'new_password'));
 
-        if (!Hash::check($request->current_password, $user->password)) {
-            return response()->json(['error' => 'Current password is incorrect'], 401);
+        if (isset($result['error'])) {
+            return response()->json(['error' => $result['error']], $result['status']);
         }
 
-        $user->password = bcrypt($request->new_password);
-        $user->save();
-
-        //activitylog
-        activity()
-            ->causedBy($user)
-            ->withProperties([
-                'ip' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-            ])
-            ->log('User password updated');
-
-        return response()->json(['message' => 'Password updated successfully']);
+        return response()->json(['message' => $result['message']], $result['status']);
     }
 }

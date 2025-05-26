@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import axios from '../api/axios';
 import { FaSpinner } from 'react-icons/fa';
 import Spinner from '../components/Spinner';
+import React, { useEffect, useState } from 'react';
 
 const Settings = () => {
   const [platforms, setPlatforms] = useState([]);

@@ -8,21 +8,19 @@ use App\Http\Requests\PostRequest;
 use App\Services\FileUploadService;
 use App\Http\Requests\UploadRequest;
 use App\Http\Resources\PostResource;
+use App\Services\PostService;
 
 class PostController extends Controller
 {
     //
-    public function index(Request $request)
+    public function index(Request $request, PostService $postService)
     {
         $user = $request->user();
-
-        $posts = Post::with('platforms')
-            ->where('user_id', $user->id)
-            ->when($request->status, fn($q, $status) => $q->where('status', $status))
-            ->when($request->date, fn($q, $date) => $q->whereDate('scheduled_time', $date))
-            ->orderByDesc('created_at')
-            ->paginate(10);
-
+        $filters = [
+            'status' => $request->status,
+            'date' => $request->date,
+        ];
+        $posts = $postService->getUserPosts($user, $filters);
 
         return response()->json([
             'message' => 'Posts retrieved successfully',
@@ -30,32 +28,19 @@ class PostController extends Controller
         ], 200);
     }
 
-    public function store(PostRequest $request)
+    public function store(PostRequest $request, PostService $postService)
     {
 
         $validated = $request->validated();
         $user = $request->user();
 
-        // Count scheduled posts for this user on the same day
-        $scheduledCount = Post::where('user_id', $user->id)
-            ->whereDate('scheduled_time', date('Y-m-d', strtotime($validated['scheduledTime'])))
-            ->where('status', 'scheduled')
-            ->count();
-
-        if ($scheduledCount >= 10) {
+        if (!$postService->canSchedulePost($user, $validated['scheduledTime'])) {
             return response()->json([
                 'message' => 'You have reached the daily limit of 10 scheduled posts.'
             ], 429);
         }
-        $post = $user->posts()->create([
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'image_url' => $validated['imageUrl'],
-            'scheduled_time' => $validated['scheduledTime'],
-            'status' => $validated['status'],
-        ]);
 
-        $post->platforms()->attach($validated['platforms']);
+        $post = $postService->createPost($user, $validated);
 
         return response()->json([
             'message' => 'Post created successfully',
@@ -64,19 +49,10 @@ class PostController extends Controller
     }
 
 
-    public function update(PostRequest $request, Post $post)
+    public function update(PostRequest $request, Post $post, PostService $postService)
     {
         $validated = $request->validated();
-
-        $post->update([
-            'title' => $validated['title'],
-            'content' => $validated['content'],
-            'image_url' => $validated['imageUrl'],
-            'scheduled_time' => $validated['scheduledTime'],
-            'status' => $validated['status'],
-        ]);
-
-        $post->platforms()->sync($validated['platforms']);
+        $post = $postService->updatePost($post, $validated);
 
         return response()->json([
             'message' => 'Post updated successfully',
@@ -85,9 +61,9 @@ class PostController extends Controller
     }
 
 
-    public function destroy(Post $post)
+    public function destroy(Post $post, PostService $postService)
     {
-        $post->delete();
+        $postService->deletePost($post);
 
         return response()->json([
             'message' => 'Post deleted successfully'

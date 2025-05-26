@@ -1,8 +1,8 @@
+import axios from '../api/axios';
+import Spinner from '../components/Spinner';
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
-import Spinner from '../components/Spinner';
 
 const Login = () => {
     const [email, setEmail] = useState('');

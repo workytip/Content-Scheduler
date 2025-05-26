@@ -1,15 +1,15 @@
 
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import PrivateRoute from './components/PrivateRoute';
-import Navbar from './Components/Navbar'
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
-import CalendarView from './pages/CalendarView';
+import Register from './pages/Register';
+import Navbar from './Components/Navbar';
 import Analytics from './pages/Analytics';
+import CalendarView from './pages/CalendarView';
+import { Routes, Route } from 'react-router-dom';
+import PrivateRoute from './components/PrivateRoute';
 
 
 function App() {

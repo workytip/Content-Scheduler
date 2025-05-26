@@ -111,5 +111,6 @@ return [
     */
 
     'password_timeout' => 10800,
+    'token_expiration_time' => env('TOKEN_EXPIRATION_TIME', 60), // in minutes, default is 60 minutes
 
 ];
