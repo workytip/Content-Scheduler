@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed on your system:
 - [Composer](https://getcomposer.org/) (PHP dependency manager)
 - [MySQL](https://www.mysql.com/) or another supported database system
 - [Git](https://git-scm.com/) (for version control)
-- [Nodejs] 
+- [Nodejs] (https://nodejs.org/) 
 
 ## Installation
 
@@ -85,7 +85,7 @@ npm run dev
 
 ![image](https://github.com/user-attachments/assets/0c792dcf-e526-45b6-99a7-dfcc7844c2e4)
 
-#% Demo Video
+## Demo Video
 
 https://drive.google.com/file/d/1grhs-KsBiOtNNY1v1yM5I_ZDy_kgJZ3J/view?usp=sharing
 
