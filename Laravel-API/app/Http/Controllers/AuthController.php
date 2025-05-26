@@ -13,9 +13,15 @@ use App\Services\AuthService;
 class AuthController extends Controller
 {
     //
-    public function login(LoginRequest $request, AuthService $authService)
+    private $authService;
+
+    public function __construct(AuthService $authService)
     {
-        $result = $authService->login($request);
+        $this->authService = $authService;
+    }
+    public function login(LoginRequest $request)
+    {
+        $result = $this->authService->login($request);
 
         if (isset($result['user'])) {
             return response()->json([
@@ -36,10 +42,10 @@ class AuthController extends Controller
     /**
      * Logout the authenticated user (revoke the token).
      */
-    public function logout(Request $request, AuthService $authService)
+    public function logout()
     {
         $user = auth()->user();
-        $result = $authService->logout($user);
+        $result = $this->authService->logout($user);
 
         return response()->json(['message' => $result['message']], $result['status']);
     }
@@ -47,10 +53,10 @@ class AuthController extends Controller
     /**
      * Register a new user.
      */
-    public function register(RegisterRequest $request, AuthService $authService)
+    public function register(RegisterRequest $request)
     {
         $validated = $request->validated();
-        $result = $authService->register($validated);
+        $result = $this->authService->register($validated);
 
         return response()->json([
             'token' => $result['token'],
@@ -61,7 +67,7 @@ class AuthController extends Controller
     /**
      * Update the password of the authenticated user.
      */
-    public function updatePassword(Request $request, AuthService $authService)
+    public function updatePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required|string',
@@ -69,7 +75,7 @@ class AuthController extends Controller
         ]);
 
         $user = auth()->user();
-        $result = $authService->updatePassword($user, $request->only('current_password', 'new_password'));
+        $result = $this->authService->updatePassword($user, $request->only('current_password', 'new_password'));
 
         if (isset($result['error'])) {
             return response()->json(['error' => $result['error']], $result['status']);

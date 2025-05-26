@@ -12,7 +12,14 @@ use App\Services\UserService;
 
 class UserController extends Controller
 {
+    private $userService;
+    private $uploader;
 
+    public function __construct(UserService $userService, FileUploadService $uploader)
+    {
+        $this->userService = $userService;
+        $this->uploader = $uploader;
+    }
     public function show(User $user)
     {
         return response()->json([
@@ -23,10 +30,10 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user, UserService $userService)
+    public function update(UpdateUserRequest $request, User $user)
     {
         $validated = $request->validated();
-        $user = $userService->updateUser($user, $validated);
+        $user = $this->userService->updateUser($user, $validated);
 
         return response()->json([
             'user' => new UserResource($user),
@@ -37,9 +44,9 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user, UserService $userService)
+    public function destroy(User $user)
     {
-        $userService->deleteUser($user);
+        $this->userService->deleteUser($user);
         return response()->json([
             'message' => 'User deleted successfully',
         ], 200);
@@ -55,9 +62,9 @@ class UserController extends Controller
         return response()->json(['data' => $activities]);
     }
 
-    public function fileUpload(UploadRequest $request, FileUploadService $uploader)
+    public function fileUpload(UploadRequest $request)
     {
-        $result = $uploader->handleUpload($request);
+        $result = $this->uploader->handleUpload($request);
         return response()->json($result, 200);
     }
 }
