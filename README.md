@@ -81,3 +81,11 @@ npm install
 ```
 npm run dev
 ```
+## Database Design
+
+![image](https://github.com/user-attachments/assets/0c792dcf-e526-45b6-99a7-dfcc7844c2e4)
+
+#% Demo Video
+
+https://drive.google.com/file/d/1grhs-KsBiOtNNY1v1yM5I_ZDy_kgJZ3J/view?usp=sharing
+
