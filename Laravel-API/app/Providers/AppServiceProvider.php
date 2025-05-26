@@ -20,5 +20,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+        // Register the observers for the User and Post models
+        \App\Models\User::observe(\App\Observers\UserObserver::class);
+        \App\Models\Post::observe(\App\Observers\PostObserver::class);
     }
 }

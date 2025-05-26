@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
+use App\Services\FileUploadService;
+use App\Http\Requests\UploadRequest;
 use App\Http\Resources\PostResource;
 
 class PostController extends Controller
@@ -33,6 +35,18 @@ class PostController extends Controller
 
         $validated = $request->validated();
         $user = $request->user();
+
+        // Count scheduled posts for this user on the same day
+        $scheduledCount = Post::where('user_id', $user->id)
+            ->whereDate('scheduled_time', date('Y-m-d', strtotime($validated['scheduledTime'])))
+            ->where('status', 'scheduled')
+            ->count();
+
+        if ($scheduledCount >= 10) {
+            return response()->json([
+                'message' => 'You have reached the daily limit of 10 scheduled posts.'
+            ], 429);
+        }
         $post = $user->posts()->create([
             'title' => $validated['title'],
             'content' => $validated['content'],
@@ -87,5 +101,11 @@ class PostController extends Controller
             'message' => 'Post retrieved successfully',
             'data' => new PostResource($post)
         ], 200);
+    }
+
+    public function fileUpload(UploadRequest $request, FileUploadService $uploader)
+    {
+        $result = $uploader->handleUpload($request);
+        return response()->json($result, 200);
     }
 }

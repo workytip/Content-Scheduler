@@ -82,6 +82,15 @@ class AuthController extends Controller
         $user->password = bcrypt($request->new_password);
         $user->save();
 
+        //activitylog
+        activity()
+            ->causedBy($user)
+            ->withProperties([
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ])
+            ->log('User password updated');
+
         return response()->json(['message' => 'Password updated successfully']);
     }
 }
