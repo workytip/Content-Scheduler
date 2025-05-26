@@ -8,6 +8,7 @@ use App\Services\FileUploadService;
 use App\Http\Requests\UploadRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\UpdateUserRequest;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
@@ -17,24 +18,15 @@ class UserController extends Controller
         return response()->json([
             'user' =>  new UserResource($user),
         ]);
-
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, User $user, UserService $userService)
     {
         $validated = $request->validated();
-
-        $user->name = $validated['name'];
-        $user->email = $validated['email'];
-        $user->image_url = $validated['imageUrl'];
-        if (!empty($validated['password'])) {
-            $user->password = bcrypt($validated['password']);
-        }
-
-        $user->save();
+        $user = $userService->updateUser($user, $validated);
 
         return response()->json([
             'user' => new UserResource($user),
@@ -45,12 +37,9 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(User $user, UserService $userService)
     {
-        //
-        // Delete the user
-        $user->delete();
-        // Return a success response
+        $userService->deleteUser($user);
         return response()->json([
             'message' => 'User deleted successfully',
         ], 200);
@@ -71,6 +60,4 @@ class UserController extends Controller
         $result = $uploader->handleUpload($request);
         return response()->json($result, 200);
     }
-
-    
 }
