@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import CalendarView from './pages/CalendarView';
+import Analytics from './pages/Analytics';
 
 
 function App() {
@@ -44,6 +46,25 @@ function App() {
               </PrivateRoute>
             }
           />
+
+          <Route
+            path="/calendar"
+            element={
+              <PrivateRoute>
+                <CalendarView />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/analytics"
+            element={
+              <PrivateRoute>
+                <Analytics />
+              </PrivateRoute>
+            }
+            />
+
         </Routes>
       </div>
     </>

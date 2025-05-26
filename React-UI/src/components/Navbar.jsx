@@ -1,6 +1,6 @@
-import { useState, useEffect, useContext } from 'react'; // <-- add useContext
+import { useState, useEffect, useContext } from 'react'; 
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext'; // <-- import AuthContext
+import { AuthContext } from '../context/AuthContext'; 
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,16 +42,16 @@ const Navbar = () => {
                 Home
               </Link>
               <Link 
-                to="/about" 
+                to="/calendar" 
                 className="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300"
               >
-                About
+                Calendar
               </Link>
               <Link 
-                to="/services" 
+                to="/analytics" 
                 className="py-4 px-2 text-gray-500 font-semibold hover:text-blue-500 transition duration-300"
               >
-                Services
+                Analytics
               </Link>
             </div>
           </div>
@@ -65,9 +65,10 @@ const Navbar = () => {
                   className="flex items-center text-gray-500 hover:text-blue-500"
                 >
                   <img 
-                    src="/assets/profile.png" 
-                    alt="Profile" 
-                    className="h-8 w-8 rounded-full mr-2"
+                    src = {user && user.imageUrl ? user.imageUrl : '/assets/profile.png'}
+                    // src = '/assets/profile.png'
+                    alt="imageUrl" 
+                      className="h-8 w-8 rounded-full mr-2 object-cover"
                   />
                   <span>{user ? user.name : ''}</span>
                 </button>

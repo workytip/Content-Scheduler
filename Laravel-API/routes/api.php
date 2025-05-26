@@ -30,10 +30,18 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 // User routes
 Route::middleware('auth:sanctum')->group(function () {
+    //auth
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::put('/users/{user}/password', [AuthController::class, 'updatePassword']);
+    
+    //user profile
+    Route::get('/user/activities', [UserController::class, 'userActivities'])->name('user.activities');
     Route::apiResource('users', UserController::class)->only(['show', 'update', 'destroy']);
+    Route::post('users/upload', [UserController::class, 'fileUpload']);
+
+    //posts
     Route::apiResource('posts', PostController::class);
+    Route::post('posts/upload', [PostController::class, 'fileUpload']);
     //platforms
     Route::get('/platforms', [PlatformController::class, 'getPlatformsWithStatus'])->name('platforms.index');
     Route::get('/user/platforms', [PlatformController::class, 'getUserPlatforms']);
