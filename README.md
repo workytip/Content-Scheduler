@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed on your system:
 - [Composer](https://getcomposer.org/) (PHP dependency manager)
 - [MySQL](https://www.mysql.com/) or another supported database system
 - [Git](https://git-scm.com/) (for version control)
-- [Nodejs]
+- [Nodejs] 
 
 ## Installation
 
@@ -60,8 +60,6 @@ php artisan key:generate
 5. **Run database migrations and seeder**
 ```
 php artisan migrate --seed
-```
-
 ```
 6.**Start the development server**
 
