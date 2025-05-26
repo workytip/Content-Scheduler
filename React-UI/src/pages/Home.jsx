@@ -54,7 +54,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchPosts();
-    // eslint-disable-next-line
+    
   }, [filters]);
 
   // Handle form input
@@ -86,8 +86,8 @@ const Home = () => {
     }
 
     // Convert local datetime to UTC ISO string
-    const local = form.scheduledTime; 
-    const utc = new Date(local).toISOString(); 
+    const local = form.scheduledTime;
+    const utc = new Date(local).toISOString();
 
     const formData = { ...form, scheduledTime: utc };
 
@@ -106,10 +106,11 @@ const Home = () => {
       setShowForm(false);
       fetchPosts();
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        'Failed to save post'
-      );
+      if (err.response && err.response.status === 429) {
+        setError(err.response.data.message); 
+      } else {
+        setError('Failed to create post.');
+      }
     }
   };
 
@@ -161,6 +162,19 @@ const Home = () => {
     setShowForm(false);
   };
 
+  const handleImageUpload = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await axios.post('/posts/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return res.data.data?.url;
+    } catch {
+      throw new Error('Image upload failed');
+    }
+  };
+
   function utcToLocalInput(utcString) {
     if (!utcString) return '';
     const date = new Date(utcString + (utcString.endsWith('Z') ? '' : 'Z'));
@@ -171,10 +185,11 @@ const Home = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Posts</h1>
+      <h1 className="text-2xl font-bold mb-4 text-grey-400">Posts</h1>
       {successMsg && <div className="text-green-600 mb-2">{successMsg}</div>}
       {error && <div className="text-red-500 mb-2">{error}</div>}
 
+      
       {/* Show button if not editing/creating */}
       {!showForm && (
         <button
@@ -189,6 +204,8 @@ const Home = () => {
         </button>
       )}
 
+
+
       {/* Show form only if showForm is true */}
       {showForm && (
         <PostForm
@@ -199,6 +216,8 @@ const Home = () => {
           handlePlatformChange={handlePlatformChange}
           handleSubmit={handleSubmit}
           handleCancel={handleCancel}
+          handleImageUpload={handleImageUpload}
+          setForm={setForm}
         />
       )}
 

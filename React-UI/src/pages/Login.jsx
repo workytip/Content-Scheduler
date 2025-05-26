@@ -72,10 +72,10 @@ const Login = () => {
                         disabled={loading}
                     >
                         {loading ? (
-                            <>
+                            <span className="flex items-center justify-center gap-2">
                                 <Spinner />
                                 Logging in...
-                            </>
+                            </span>
                         ) : (
                             'Login'
                         )}
