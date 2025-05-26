@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
 import axios from '../api/axios';
-import PostForm from '../components/PostForm';
-import PostList from '../components/PostList';
-import PostFilter from '../components/PostFilter';
+import { AuthContext } from '../context/AuthContext';
+import PostForm from '../components/posts/PostForm';
+import PostList from '../components/posts/PostList';
+import PostFilter from '../components/posts/PostFilter';
+import React, { useEffect, useState, useContext } from 'react';
 
 const initialForm = {
   title: '',

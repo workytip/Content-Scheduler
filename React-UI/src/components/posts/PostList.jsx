@@ -1,6 +1,6 @@
 import React from 'react';
+import Spinner from '../Spinner';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import Spinner from './Spinner';
 
 
 const CameraIcon = () => (

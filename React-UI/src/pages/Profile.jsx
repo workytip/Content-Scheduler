@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
 import axios from '../api/axios';
-import { AuthContext } from '../context/AuthContext';
 import Spinner from '../components/Spinner';
-import ActivityPanel from '../components/ActivityPanel';
-import ProfileForm from '../components/ProfileForm';
-import PasswordForm from '../components/PasswordForm';
+import { AuthContext } from '../context/AuthContext';
+import ProfileForm from '../components/profile/ProfileForm';
+import PasswordForm from '../components/profile/PasswordForm';
+import ActivityPanel from '../components/profile/ActivityPanel';
+import React, { useEffect, useState, useContext } from 'react';
 
 const Profile = () => {
   const { user: authUser, setUser } = useContext(AuthContext);

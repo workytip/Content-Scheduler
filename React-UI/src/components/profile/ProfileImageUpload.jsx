@@ -1,5 +1,5 @@
 import React from 'react';
-import axios from '../api/axios';
+import axios from '../../api/axios';
 
 const ProfileImageUpload = ({ imageUrl, setForm, setError }) => {
   const handleProfileImageChange = async (e) => {
