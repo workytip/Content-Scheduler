@@ -66,7 +66,6 @@ const Navbar = () => {
                 >
                   <img 
                     src = {user && user.imageUrl ? user.imageUrl : '/assets/profile.png'}
-                    // src = '/assets/profile.png'
                     alt="imageUrl" 
                       className="h-8 w-8 rounded-full mr-2 object-cover"
                   />

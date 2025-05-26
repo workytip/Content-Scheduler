@@ -13,11 +13,17 @@ class PlatformController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private $platformService;
 
-    public function getPlatformsWithStatus(Request $request, PlatformService $platformService)
+    public function __construct(PlatformService $platformService)
+    {
+        $this->platformService = $platformService;
+    }
+
+    public function getPlatformsWithStatus(Request $request)
     {
         $user = $request->user();
-        $platforms = $platformService->getActivePlatforms($user);
+        $platforms = $this->platformService->getActivePlatforms($user);
 
         return response()->json(['platforms' => $platforms], 200);
     }
@@ -29,10 +35,10 @@ class PlatformController extends Controller
      * @param \App\Models\Platform $platform
      * @return \Illuminate\Http\JsonResponse
      */
-    public function togglePlatform(Request $request, Platform $platform, PlatformService $platformService)
+    public function togglePlatform(Request $request, Platform $platform)
     {
         $user = $request->user();
-        $result = $platformService->togglePlatform($user, $platform);
+        $result = $this->platformService->togglePlatform($user, $platform);
 
         if (isset($result['error'])) {
             return response()->json(['message' => $result['error']], $result['status']);
@@ -48,10 +54,10 @@ class PlatformController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     
-    public function getUserPlatforms(Request $request, PlatformService $platformService)
+    public function getUserPlatforms(Request $request)
     {
         $user = $request->user();
-        $platforms = $platformService->getUserPlatforms($user);
+        $platforms = $this->platformService->getUserPlatforms($user);
 
         return response()->json(['platforms' => $platforms], 200);
     }

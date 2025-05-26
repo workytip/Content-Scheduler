@@ -14,7 +14,6 @@ const Profile = () => {
   const [form, setForm] = useState({ name: '', email: '', imageUrl: '' });
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
-  // Password change state
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [passwords, setPasswords] = useState({
     current_password: '',

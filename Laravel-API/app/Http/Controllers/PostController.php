@@ -13,14 +13,23 @@ use App\Services\PostService;
 class PostController extends Controller
 {
     //
-    public function index(Request $request, PostService $postService)
+    private $postService;
+    private $uploader;
+
+    public function __construct(PostService $postService, FileUploadService $uploader)
+    {
+        $this->postService = $postService;
+        $this->uploader = $uploader;
+    }
+   
+    public function index(Request $request)
     {
         $user = $request->user();
         $filters = [
             'status' => $request->status,
             'date' => $request->date,
         ];
-        $posts = $postService->getUserPosts($user, $filters);
+        $posts = $this->postService->getUserPosts($user, $filters);
 
         return response()->json([
             'message' => 'Posts retrieved successfully',
@@ -28,19 +37,19 @@ class PostController extends Controller
         ], 200);
     }
 
-    public function store(PostRequest $request, PostService $postService)
+    public function store(PostRequest $request)
     {
 
         $validated = $request->validated();
         $user = $request->user();
 
-        if (!$postService->canSchedulePost($user, $validated['scheduledTime'])) {
+        if (!$this->postService->canSchedulePost($user, $validated['scheduledTime'])) {
             return response()->json([
                 'message' => 'You have reached the daily limit of 10 scheduled posts.'
             ], 429);
         }
 
-        $post = $postService->createPost($user, $validated);
+        $post = $this->postService->createPost($user, $validated);
 
         return response()->json([
             'message' => 'Post created successfully',
@@ -49,10 +58,10 @@ class PostController extends Controller
     }
 
 
-    public function update(PostRequest $request, Post $post, PostService $postService)
+    public function update(PostRequest $request, Post $post)
     {
         $validated = $request->validated();
-        $post = $postService->updatePost($post, $validated);
+        $post = $this->postService->updatePost($post, $validated);
 
         return response()->json([
             'message' => 'Post updated successfully',
@@ -61,9 +70,9 @@ class PostController extends Controller
     }
 
 
-    public function destroy(Post $post, PostService $postService)
+    public function destroy(Post $post)
     {
-        $postService->deletePost($post);
+        $this->postService->deletePost($post);
 
         return response()->json([
             'message' => 'Post deleted successfully'
@@ -79,9 +88,9 @@ class PostController extends Controller
         ], 200);
     }
 
-    public function fileUpload(UploadRequest $request, FileUploadService $uploader)
+    public function fileUpload(UploadRequest $request)
     {
-        $result = $uploader->handleUpload($request);
+        $result = $this->uploader->handleUpload($request);
         return response()->json($result, 200);
     }
 }
